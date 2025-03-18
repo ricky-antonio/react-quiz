@@ -2,6 +2,9 @@ import { useEffect, useReducer } from "react";
 import Header from "./components/Header";
 import Main from "./components/Main";
 import Error from "./components/Error";
+import Loader from "./components/Loader";
+import StartScreen from "./components/StartScreen";
+import Question from "./components/Question";
 
 const initialState = {
     questions: [],
@@ -15,6 +18,8 @@ const reducer = (state, action) => {
             return { ...state, questions: action.payload, status: "ready" };
         case "dataFailed":
             return { ...state, status: "error" };
+        case "startQuiz":
+            return { ...state, status: "active" };
         default:
             throw new Error("Unknown action");
     }
@@ -24,6 +29,7 @@ const App = () => {
     const [state, dispatch] = useReducer(reducer, initialState);
 
     const { questions, status } = state;
+    const numQuestions = questions.length;
 
     useEffect(() => {
         fetch("http://localhost:8000/questions")
@@ -39,17 +45,15 @@ const App = () => {
         <div className="app">
             <Header />
             <Main>
-                {status === "ready" && (
-                    <>
-                        {questions.map((item, index) => (
-                            <p key={item.id}>{`q-${index + 1}: ${
-                                item.question
-                            }`}</p>
-                        ))}
-                    </>
-                )}
-
+                {status === "loading" && <Loader />}
                 {status === "error" && <Error />}
+                {status === "ready" && (
+                    <StartScreen
+                        numQuestions={numQuestions}
+                        dispatch={dispatch}
+                    />
+                )}
+                {status === "active" && <Question />}
             </Main>
         </div>
     );
