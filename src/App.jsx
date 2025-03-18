@@ -1,8 +1,10 @@
+import DateCounter from "./components/DateCounter"
+
 const App = () => {
 
   return (
     <>
-      App
+      <DateCounter />
     </>
   )
 }
