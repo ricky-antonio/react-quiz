@@ -5,6 +5,8 @@ import Error from "./Error";
 import Loader from "./Loader";
 import StartScreen from "./StartScreen";
 import Question from "./Question";
+import NextButton from "./NextButton";
+import Progress from "./Progress";
 
 const initialState = {
     questions: [],
@@ -35,7 +37,15 @@ const reducer = (state, action) => {
             };
         }
         case "nextQuestion":
-            return { ...state, answer: null, index: state.index++ };
+            return {
+                ...state,
+                answer: null,
+                index: state.index++,
+                status:
+                    state.index < state.questions.length
+                        ? state.status
+                        : "finished",
+            };
         default:
             throw new Error("Unknown action");
     }
@@ -44,8 +54,12 @@ const reducer = (state, action) => {
 const App = () => {
     const [state, dispatch] = useReducer(reducer, initialState);
 
-    const { questions, status, index, answer } = state;
+    const { questions, status, index, answer, points } = state;
     const numQuestions = questions.length;
+    const maxPoints = questions.reduce(
+        (acc, question) => question.points + acc,
+        0
+    );
 
     useEffect(() => {
         fetch("http://localhost:8000/questions")
@@ -70,13 +84,28 @@ const App = () => {
                     />
                 )}
                 {status === "active" && (
-                    <Question
-                        question={questions[index]}
-                        answer={answer}
-                        dispatch={dispatch}
-                        points={state.points}
-                    />
+                    <>
+                        <Progress
+                            index={index}
+                            points={points}
+                            numQuestions={numQuestions}
+                            maxPoints={maxPoints}
+                            answer={answer}
+                        />
+
+                        <Question
+                            question={questions[index]}
+                            answer={answer}
+                            dispatch={dispatch}
+                            points={state.points}
+                        />
+
+                        <NextButton dispatch={dispatch} answer={answer} />
+                    </>
                 )}
+                <h3>{index}</h3>
+                {status === "finished" && <Error />}
+
             </Main>
         </div>
     );

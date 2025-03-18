@@ -24,14 +24,6 @@ const Options = ({ question, dispatch, answer }) => {
                     {option}
                 </button>
             ))}
-            {hasAnswered && (
-                <button
-                    className="btn btn-ui"
-                    onClick={() => dispatch({ type: "nextQuestion" })}
-                >
-                    next question
-                </button>
-            )}
         </div>
     );
 };
