@@ -7,6 +7,7 @@ import StartScreen from "./StartScreen";
 import Question from "./Question";
 import NextButton from "./NextButton";
 import Progress from "./Progress";
+import FinishedScreen from "./FinishedScreen";
 
 const initialState = {
     questions: [],
@@ -15,6 +16,7 @@ const initialState = {
     index: 0,
     answer: null,
     points: 0,
+    highscore: 0,
 };
 
 const reducer = (state, action) => {
@@ -41,10 +43,15 @@ const reducer = (state, action) => {
                 ...state,
                 answer: null,
                 index: state.index++,
-                status:
-                    state.index < state.questions.length
-                        ? state.status
-                        : "finished",
+            };
+        case "finish":
+            return {
+                ...state,
+                status: "finished",
+                highscore:
+                    state.points > state.highscore
+                        ? state.points
+                        : state.highscore,
             };
         default:
             throw new Error("Unknown action");
@@ -54,7 +61,7 @@ const reducer = (state, action) => {
 const App = () => {
     const [state, dispatch] = useReducer(reducer, initialState);
 
-    const { questions, status, index, answer, points } = state;
+    const { questions, status, index, answer, points, highscore } = state;
     const numQuestions = questions.length;
     const maxPoints = questions.reduce(
         (acc, question) => question.points + acc,
@@ -100,12 +107,18 @@ const App = () => {
                             points={state.points}
                         />
 
-                        <NextButton dispatch={dispatch} answer={answer} />
+                        <NextButton
+                            dispatch={dispatch}
+                            answer={answer}
+                            numQuestions={numQuestions}
+                            index={index}
+                        />
                     </>
                 )}
-                <h3>{index}</h3>
-                {status === "finished" && <Error />}
 
+                {status === "finished" && (
+                    <FinishedScreen points={points} maxPoints={maxPoints} highscore={highscore} />
+                )}
             </Main>
         </div>
     );
