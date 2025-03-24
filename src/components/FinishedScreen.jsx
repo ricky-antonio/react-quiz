@@ -1,5 +1,9 @@
-const FinishedScreen = ({ points, maxPoints, highscore, dispatch }) => {
+import { useQuiz } from "../context/QuizContext";
+
+const FinishedScreen = () => {
+    const { points, maxPoints, highscore, dispatch } = useQuiz();
     const percentage = Math.ceil((points / maxPoints) * 100);
+    
     return (
         <>
         <p className="result">
