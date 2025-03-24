@@ -34,12 +34,7 @@ const App = () => {
                 )}
 
                 {status === "finished" && (
-                    <FinishedScreen
-                    // points={points}
-                    // maxPoints={maxPoints}
-                    // highscore={highscore}
-                    // dispatch={dispatch}
-                    />
+                    <FinishedScreen />
                 )}
             </Main>
         </div>
